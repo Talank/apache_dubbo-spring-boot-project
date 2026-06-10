@@ -1,16 +1,6 @@
 name: Dubbo 2
 
 on:
-  pull_request:
-    paths:
-      - "**"
-      - "!**/*.md"
-      - "!docs/**"
-  push:
-    paths:
-      - '**'
-      - "!**/*.md"
-      - "!docs/**"
   workflow_dispatch:
 
 env:
@@ -54,7 +44,7 @@ jobs:
           path: ~/.m2/repository/org/apache/dubbo
           key: ${{ runner.os }}-dubbo-snapshot-${{steps.git-checker.outputs.commit_id}}
       - name: Cache local Maven repository
-        if: steps.dubbocache.outputs.cache-hit != 'true'
+        if: always()
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
@@ -62,12 +52,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dubbo-${{env.DUBBO_REF}}-maven-
       - name: Set up JDK 8
-        if: steps.dubbocache.outputs.cache-hit != 'true'
+        if: always()
         uses: actions/setup-java@v1
         with:
           java-version: 8
       - name: Build dubbo
-        if: steps.dubbocache.outputs.cache-hit != 'true'
+        if: always()
         run: |
           ./mvnw -U --batch-mode --no-transfer-progress -Dmaven.wagon.http.retryHandler.count=3 clean install -Dmaven.test.skip=true -Dmaven.test.skip.exec=true
 
